@@ -9,8 +9,25 @@ namespace DirectedWeightedGraph
         private List<Vertex<T>> vertices;
         public IReadOnlyList<Vertex<T>> Vertices { get {return vertices; } }
 
-        //private List<Edge<T>> edges;
-        //public IReadOnlyList<Edge<T>> Edges { get { return edges; } }
+        public IReadOnlyList<Edge<T>> Edges 
+        { 
+            get
+            {
+                List<Edge<T>> edges = new List<Edge<T>>();
+
+                foreach(Vertex<T> vertex in vertices)
+                {
+                    foreach(Edge<T> edge in vertex.Edges)
+                    {
+                        if(!edges.Contains(edge))
+                        {
+                            edges.Add(edge);
+                        }
+                    }
+                }
+                return edges;
+            } 
+        }
         public int Count { get { return vertices.Count; } }
 
         public Graph()
@@ -54,7 +71,7 @@ namespace DirectedWeightedGraph
             Vertex<T> startingVertex = Find(startingValue);
             Vertex<T> endingVertex = Find(endingValue);
 
-            if(startingValue == null || endingValue == null)
+            if(startingVertex == null || endingVertex == null)
             {
                 return false;
             }
@@ -99,6 +116,21 @@ namespace DirectedWeightedGraph
             }
             if(temp != null)
             {
+
+                IReadOnlyList<Edge<T>> edges = Edges;
+                List<Edge<T>> deleteList = new List<Edge<T>>();
+                foreach(Edge<T> edge in edges)
+                {
+                    if(edge.EndingVertex.Equals(temp))
+                    {
+                        deleteList.Add(edge);
+                    }
+                }
+                foreach(Edge<T> edge in deleteList)
+                {
+                    RemoveConnection(edge.StartingVertex.Value, edge.EndingVertex.Value);
+                }
+
                 vertices.Remove(temp);
                 return true;
             }
@@ -127,6 +159,55 @@ namespace DirectedWeightedGraph
                 return true;
             }
             return false;
+        }
+
+        public List<T> DFS(T startValue, T endValue)
+        {
+            Vertex<T> startingVertex = Find(startValue);
+            Vertex<T> endingVertex = Find(endValue);
+            if (startingVertex == null || endingVertex == null)
+            {
+                return null;
+            }
+
+            Stack<Vertex<T>> stack = new Stack<Vertex<T>>();
+            Vertex<T> currentVertex = null;
+            Vertex<T> previousVertex = null;
+            stack.Push(startingVertex);
+
+            List<Vertex<T>> visited = new List<Vertex<T>>();
+            List<T> returnList = new List<T>();
+            Vertex<T>[] parents = new Vertex<T>[vertices.Count];
+            for(int i = 0; i < vertices.Count; i ++)
+            {
+                parents[i] = default;
+            }
+
+            do
+            {
+                previousVertex = currentVertex;
+                currentVertex = stack.Pop();
+                if (!visited.Contains(currentVertex))
+                {
+                    visited.Add(currentVertex);
+                    parents[vertices.IndexOf(currentVertex)] = previousVertex;
+                }
+
+                foreach (Edge<T> edge in currentVertex.Edges)
+                {
+                    if (!visited.Contains(edge.EndingVertex))
+                    {
+                        stack.Push(edge.EndingVertex);
+                    }
+                }
+            } while (!currentVertex.Equals(endingVertex) && stack.Count != 0 && currentVertex != null);
+
+            while (currentVertex != null)
+            {
+                returnList.Add(currentVertex.Value);
+                currentVertex = parents[vertices.IndexOf(currentVertex)];
+            }
+            return returnList;
         }
     }
 }

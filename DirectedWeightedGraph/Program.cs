@@ -15,6 +15,7 @@ namespace DirectedWeightedGraph
             graph.AddVertex(16);
             graph.AddVertex(27);
             graph.AddVertex(39);
+            graph.AddVertex(100);
 
             graph.Connect(6, 57, 51);
             graph.Connect(6, 16, 10);
@@ -23,6 +24,7 @@ namespace DirectedWeightedGraph
             graph.Connect(6, 39, 33);
             graph.Connect(39, 16, 23);
             graph.Connect(27, 57, 30);
+            graph.Connect(27, 100, 73);
 
             graph.RemoveVertex(39);
             graph.RemoveConnection(16, 27);
@@ -30,7 +32,8 @@ namespace DirectedWeightedGraph
             bool isfalse = graph.Connect(6, 16, 10);
             bool istrue = graph.AreConnected(39, 16);
 
-            List<int> dfs = graph.DFS(6, 16);
+            List<int> dfs = graph.DFS(6, 100);
+            List<int> bfs = graph.BFS(6, 100);
             List<int> isnull = graph.DFS(6, 39);
         }
     }

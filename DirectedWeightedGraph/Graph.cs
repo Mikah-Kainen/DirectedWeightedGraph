@@ -172,7 +172,6 @@ namespace DirectedWeightedGraph
 
             Stack<Vertex<T>> stack = new Stack<Vertex<T>>();
             Vertex<T> currentVertex = null;
-            Vertex<T> previousVertex = null;
             stack.Push(startingVertex);
 
             List<Vertex<T>> visited = new List<Vertex<T>>();
@@ -185,12 +184,10 @@ namespace DirectedWeightedGraph
 
             do
             {
-                previousVertex = currentVertex;
                 currentVertex = stack.Pop();
                 if (!visited.Contains(currentVertex))
                 {
                     visited.Add(currentVertex);
-                    parents[vertices.IndexOf(currentVertex)] = previousVertex;
                 }
 
                 foreach (Edge<T> edge in currentVertex.Edges)
@@ -198,9 +195,57 @@ namespace DirectedWeightedGraph
                     if (!visited.Contains(edge.EndingVertex))
                     {
                         stack.Push(edge.EndingVertex);
+                        parents[vertices.IndexOf(edge.EndingVertex)] = currentVertex;
                     }
                 }
             } while (!currentVertex.Equals(endingVertex) && stack.Count != 0 && currentVertex != null);
+
+            while (currentVertex != null)
+            {
+                returnList.Add(currentVertex.Value);
+                currentVertex = parents[vertices.IndexOf(currentVertex)];
+            }
+            return returnList;
+        }
+
+        public List<T> BFS(T startValue, T endValue)
+        {
+            Vertex<T> startingVertex = Find(startValue);
+            Vertex<T> endingVertex = Find(endValue);
+            if (startingVertex == null || endingVertex == null)
+            {
+                return null;
+            }
+
+            Queue<Vertex<T>> queue = new Queue<Vertex<T>>();
+            Vertex<T> currentVertex = null;
+            queue.Enqueue(startingVertex);
+
+            List<Vertex<T>> visited = new List<Vertex<T>>();
+            List<T> returnList = new List<T>();
+            Vertex<T>[] parents = new Vertex<T>[vertices.Count];
+            for (int i = 0; i < vertices.Count; i++)
+            {
+                parents[i] = default;
+            }
+
+            do
+            {
+                currentVertex = queue.Dequeue();
+                if (!visited.Contains(currentVertex))
+                {
+                    visited.Add(currentVertex);
+                }
+
+                foreach (Edge<T> edge in currentVertex.Edges)
+                {
+                    if (!visited.Contains(edge.EndingVertex))
+                    {
+                        queue.Enqueue(edge.EndingVertex);
+                        parents[vertices.IndexOf(edge.EndingVertex)] = currentVertex;
+                    }
+                }
+            } while (!currentVertex.Equals(endingVertex) && queue.Count != 0 && currentVertex != null);
 
             while (currentVertex != null)
             {

@@ -7,26 +7,26 @@ namespace DirectedWeightedGraph
     class Graph<T>
     {
         private List<Vertex<T>> vertices;
-        public IReadOnlyList<Vertex<T>> Vertices { get {return vertices; } }
+        public IReadOnlyList<Vertex<T>> Vertices { get { return vertices; } }
 
-        public IReadOnlyList<Edge<T>> Edges 
-        { 
+        public IReadOnlyList<Edge<T>> Edges
+        {
             get
             {
                 List<Edge<T>> edges = new List<Edge<T>>();
 
-                foreach(Vertex<T> vertex in vertices)
+                foreach (Vertex<T> vertex in vertices)
                 {
-                    foreach(Edge<T> edge in vertex.Edges)
+                    foreach (Edge<T> edge in vertex.Edges)
                     {
-                        if(!edges.Contains(edge))
+                        if (!edges.Contains(edge))
                         {
                             edges.Add(edge);
                         }
                     }
                 }
                 return edges;
-            } 
+            }
         }
         public int Count { get { return vertices.Count; } }
 
@@ -43,9 +43,9 @@ namespace DirectedWeightedGraph
 
         public bool Contains(T value)
         {
-            foreach(Vertex<T> vertex in vertices)
+            foreach (Vertex<T> vertex in vertices)
             {
-                if(vertex.Value.Equals(value))
+                if (vertex.Value.Equals(value))
                 {
                     return true;
                 }
@@ -71,31 +71,31 @@ namespace DirectedWeightedGraph
             Vertex<T> startingVertex = Find(startingValue);
             Vertex<T> endingVertex = Find(endingValue);
 
-            if(startingVertex == null || endingVertex == null)
+            if (startingVertex == null || endingVertex == null)
             {
                 return false;
             }
 
-                foreach (Edge<T> edge in startingVertex.Edges)
+            foreach (Edge<T> edge in startingVertex.Edges)
+            {
+                if (edge.EndingVertex.Equals(endingVertex))
                 {
-                    if (edge.EndingVertex.Equals(endingVertex))
-                    {
-                        return true;
-                    }
+                    return true;
                 }
+            }
             return false;
         }
 
         public bool Connect(T startingValue, T endingValue, int weight)
         {
-            if(AreConnected(startingValue, endingValue))
+            if (AreConnected(startingValue, endingValue))
             {
                 return false;
             }
             Vertex<T> startingVertex = Find(startingValue);
             Vertex<T> endingVertex = Find(endingValue);
 
-            if(startingVertex == null || endingVertex == null)
+            if (startingVertex == null || endingVertex == null)
             {
                 return false;
             }
@@ -107,26 +107,26 @@ namespace DirectedWeightedGraph
         public bool RemoveVertex(T value)
         {
             Vertex<T> temp = null;
-            foreach(Vertex<T> vertex in vertices)
+            foreach (Vertex<T> vertex in vertices)
             {
-                if(vertex.Value.Equals(value))
+                if (vertex.Value.Equals(value))
                 {
                     temp = vertex;
                 }
             }
-            if(temp != null)
+            if (temp != null)
             {
 
                 IReadOnlyList<Edge<T>> edges = Edges;
                 List<Edge<T>> deleteList = new List<Edge<T>>();
-                foreach(Edge<T> edge in edges)
+                foreach (Edge<T> edge in edges)
                 {
-                    if(edge.EndingVertex.Equals(temp))
+                    if (edge.EndingVertex.Equals(temp))
                     {
                         deleteList.Add(edge);
                     }
                 }
-                foreach(Edge<T> edge in deleteList)
+                foreach (Edge<T> edge in deleteList)
                 {
                     RemoveConnection(edge.StartingVertex.Value, edge.EndingVertex.Value);
                 }
@@ -139,27 +139,100 @@ namespace DirectedWeightedGraph
 
         public bool RemoveConnection(T startingValue, T endingValue)
         {
-            if(!AreConnected(startingValue, endingValue))
+            if (!AreConnected(startingValue, endingValue))
             {
                 return false;
             }
             Vertex<T> startingVertex = Find(startingValue);
 
             Edge<T> temp = null;
-            foreach(Edge<T> edge in startingVertex.Edges)
+            foreach (Edge<T> edge in startingVertex.Edges)
             {
-                if(edge.EndingVertex.Value.Equals(endingValue))
+                if (edge.EndingVertex.Value.Equals(endingValue))
                 {
                     temp = edge;
                 }
             }
-            if(temp != null)
+            if (temp != null)
             {
                 startingVertex.Edges.Remove(temp);
                 return true;
             }
             return false;
         }
+
+        public List<List<T>> FindShortestPath(T startValue, T endValue)
+        {
+            Vertex<T> startingVertex = Find(startValue);
+            Vertex<T> endingVertex = Find(endValue);
+            List<List<T>> returnList = new List<List<T>>();
+
+            if (startingVertex == null || endingVertex == null)
+            {
+                return returnList;
+            }
+
+            returnList.Add(new List<T>());
+            List<List<T>> pathList = FindShortestPath(startingVertex, endingVertex, returnList, 0);
+
+            return returnList;
+        }
+
+
+
+        public List<T> AllPaths(T start, T end)
+        {
+            var startVert = Find(start);
+            var endVert = Find(end);
+
+
+            List<T> path = new List<T>();
+            HashSet<Vertex<T>> visited = new HashSet<Vertex<T>>();
+            dfsUtil(path, visited, startVert, endVert);
+
+            return path;
+
+        }
+
+        private void dfsUtil(List<T> path, HashSet<Vertex<T>> visited, Vertex<T> startVert, Vertex<T> endVert)
+        {
+            if (startVert == null)
+            {
+                return;
+            }
+
+            path.Add(startVert.Value);
+
+
+            foreach (var edge in startVert.Edges)
+            {
+                if (!visited.Contains(edge.EndingVertex))
+                {
+                    visited.Add(edge.EndingVertex);
+                    dfsUtil(path, visited, edge.EndingVertex, endVert);
+
+                }
+
+            }
+        }
+
+        private List<List<T>> FindShortestPath(Vertex<T> startingVertex, Vertex<T> endingVertex, List<List<T>> returnList, int parentIndex)
+        {
+            if (startingVertex == endingVertex)
+            {
+                return returnList;
+            }
+            List<T> newList = returnList[parentIndex];
+            newList.Add(startingVertex.Value);
+            returnList.Add(newList);
+            int newIndex = returnList.IndexOf(newList);
+            foreach (Edge<T> edge in startingVertex.Edges)
+            {
+                FindShortestPath(edge.EndingVertex, endingVertex, returnList, newIndex);
+            }
+            return returnList;
+        }
+
 
         public List<T> DFS(T startValue, T endValue)
         {
@@ -177,7 +250,7 @@ namespace DirectedWeightedGraph
             List<Vertex<T>> visited = new List<Vertex<T>>();
             List<T> returnList = new List<T>();
             Vertex<T>[] parents = new Vertex<T>[vertices.Count];
-            for(int i = 0; i < vertices.Count; i ++)
+            for (int i = 0; i < vertices.Count; i++)
             {
                 parents[i] = default;
             }

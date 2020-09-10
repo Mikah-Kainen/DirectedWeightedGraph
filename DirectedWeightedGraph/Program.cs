@@ -44,34 +44,11 @@ namespace DirectedWeightedGraph
 
 
             //Enumerable.SequenceEqual()
+            graph.Connect('a', 'd', 1);
 
-            //    graph.AddVertex(6);
-            //    graph.AddVertex(57);
-            //    graph.AddVertex(16);
-            //    graph.AddVertex(27);
-            //    graph.AddVertex(39);
-            //    graph.AddVertex(100);
-
-            //    graph.Connect(6, 57, 51);
-            //    graph.Connect(6, 16, 10);
-            //    graph.Connect(16, 27, 11);
-            //    graph.Connect(6, 27, 21);
-            //    graph.Connect(6, 39, 33);
-            //    graph.Connect(39, 16, 23);
-            //    graph.Connect(27, 57, 30);
-            //    graph.Connect(27, 100, 73);
-
-            //    graph.RemoveVertex(39);
-            //    graph.RemoveConnection(16, 27);
-
-            //    bool isfalse = graph.Connect(6, 16, 10);
-            //    bool istrue = graph.AreConnected(39, 16);
-
-                List<char> dfs = graph.DFS('a', 'k');
-                List<char> bfs = graph.BFS('a', 'k');
-                var thing = graph.FindShortestPath('a', 'k');
-            //    List<int> isnull = graph.DFS(6, 39);
-
+            List<char> dfs = graph.DFS('a', 'k');
+            List<char> bfs = graph.BFS('a', 'k');
+            var thing = graph.FindShortestPath('a', 'k');
         }
     }
 }

@@ -9,53 +9,54 @@ namespace DirectedWeightedGraph
     {
         static void Main(string[] args)
         {
-            Graph<char> graph = new Graph<char>();
+            //Graph<char> graph = new Graph<char>();
 
-            graph.AddVertex('a');
-            graph.AddVertex('b');
-            graph.AddVertex('c');
-            graph.AddVertex('d');
-            graph.AddVertex('e');
-            graph.AddVertex('f');
-            graph.AddVertex('g');
-            graph.AddVertex('h');
-            graph.AddVertex('i');
-            graph.AddVertex('j');
-            graph.AddVertex('k');
-
-
-            List<int> list1 = new List<int>() { 1, 5, 3, 2, 6, 7 };
-
-            List<int> list2;
-
-            list2 = list1.Concat(new List<int>() { 4 }).ToList();
-            
-
-            graph.Connect('a', 'b', 3);
-            graph.Connect('a', 'd', 3);
-            graph.Connect('b', 'c', 5);
-            graph.Connect('b', 'e', 2);
-            graph.Connect('c', 'd', 5);
-            graph.Connect('c', 'f', 2);
-            graph.Connect('d', 'g', 2);
-            graph.Connect('e', 'f', 5);
-            graph.Connect('e', 'h', 2);
-            graph.Connect('f', 'g', 5);
-            graph.Connect('f', 'i', 2);
-            graph.Connect('g', 'j', 2);
-            graph.Connect('h', 'i', 5);
-            graph.Connect('h', 'k', 3);
-            graph.Connect('i', 'j', 5);
-            graph.Connect('i', 'k', 2);
-            graph.Connect('j', 'k', 3);
+            //graph.AddVertex('a');
+            //graph.AddVertex('b');
+            //graph.AddVertex('c');
+            //graph.AddVertex('d');
+            //graph.AddVertex('e');
+            //graph.AddVertex('f');
+            //graph.AddVertex('g');
+            //graph.AddVertex('h');
+            //graph.AddVertex('i');
+            //graph.AddVertex('j');
+            //graph.AddVertex('k');
 
 
-            //Enumerable.SequenceEqual()
-            graph.Connect('a', 'd', 1);
+            //graph.Connect('a', 'b', 3);
+            //graph.Connect('a', 'd', 3);
+            //graph.Connect('b', 'c', 5);
+            //graph.Connect('b', 'e', 2);
+            //graph.Connect('c', 'd', 5);
+            //graph.Connect('c', 'f', 2);
+            //graph.Connect('d', 'g', 2);
+            //graph.Connect('e', 'f', 5);
+            //graph.Connect('e', 'h', 2);
+            //graph.Connect('f', 'g', 5);
+            //graph.Connect('f', 'i', 2);
+            //graph.Connect('g', 'j', 2);
+            //graph.Connect('h', 'i', 5);
+            //graph.Connect('h', 'k', 3);
+            //graph.Connect('i', 'j', 5);
+            //graph.Connect('i', 'k', 2);
+            //graph.Connect('j', 'k', 3);
 
-            List<char> dfs = graph.DFS('a', 'k');
-            List<char> bfs = graph.BFS('a', 'k');
-            var thing = graph.FindShortestPath('a', 'k');
+
+            ////Enumerable.SequenceEqual()
+            //graph.Connect('a', 'd', 1);
+
+            //List<char> dfs = graph.DFS('a', 'k');
+            //List<char> bfs = graph.BFS('a', 'k');
+            //var thing = graph.FindShortestPath('a', 'k');
+
+            HeapTree<int> tree = new HeapTree<int>();
+            tree.Add(10);
+            tree.Add(5);
+            tree.Add(4);
+            tree.Add(8);
+            tree.Add(1);
+            tree.Add(22);
         }
     }
 }

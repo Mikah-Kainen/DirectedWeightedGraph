@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace DirectedWeightedGraph
 {
@@ -249,6 +250,7 @@ namespace DirectedWeightedGraph
                     deleteStack.Push(list);
                 }
             }
+
             while (deleteStack.Count != 0)
             {
                 returnList.Remove(deleteStack.Pop());
@@ -269,11 +271,7 @@ namespace DirectedWeightedGraph
             foreach (Edge<T> newEdge in startingVertex.Edges)
             {
                 newPath = new List<Edge<T>>();
-                foreach (Edge<T> oldEdge in oldPath)
-                {
-                    newPath.Add(oldEdge);
-                }
-                newPath.Add(newEdge);
+                newPath = (List<Edge<T>>)oldPath.Concat(new List<Edge<T>> { newEdge }).ToList();
                 returnList[numbers.Pop()] = newPath;
                 FindShortestPath(newEdge.EndingVertex, endingVertex, returnList, numbers, newPath);
             }

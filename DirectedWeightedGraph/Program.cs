@@ -24,6 +24,13 @@ namespace DirectedWeightedGraph
             graph.AddVertex('k');
 
 
+            List<int> list1 = new List<int>() { 1, 5, 3, 2, 6, 7 };
+
+            List<int> list2;
+
+            list2 = list1.Concat(new List<int>() { 4 }).ToList();
+            
+
             graph.Connect('a', 'b', 3);
             graph.Connect('a', 'd', 3);
             graph.Connect('b', 'c', 5);

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace DirectedWeightedGraph
@@ -84,7 +85,6 @@ namespace DirectedWeightedGraph
             }
             return false;
         }
-
         public bool Connect(T startingValue, T endingValue, int weight)
         {
             if (AreConnected(startingValue, endingValue))
@@ -135,7 +135,6 @@ namespace DirectedWeightedGraph
             }
             return false;
         }
-
         public bool RemoveConnection(T startingValue, T endingValue)
         {
             if (!AreConnected(startingValue, endingValue))
@@ -181,7 +180,6 @@ namespace DirectedWeightedGraph
             }
             return weight;
         }
-
         private int FindWeight(List<Edge<T>> list)
         {
             int weight = 0;
@@ -259,7 +257,6 @@ namespace DirectedWeightedGraph
 
             return returnList;
         }
-
         private void FindShortestPath(Vertex<T> startingVertex, Vertex<T> endingVertex, List<List<Edge<T>>> returnList, Stack<int> numbers, List<Edge<T>> oldPath)
         {
             if (startingVertex.Equals(endingVertex))
@@ -271,86 +268,12 @@ namespace DirectedWeightedGraph
             foreach (Edge<T> newEdge in startingVertex.Edges)
             {
                 newPath = new List<Edge<T>>();
-                newPath = (List<Edge<T>>)oldPath.Concat(new List<Edge<T>> { newEdge }).ToList();
+                newPath = oldPath.Concat(new List<Edge<T>> { newEdge }).ToList();
                 returnList[numbers.Pop()] = newPath;
                 FindShortestPath(newEdge.EndingVertex, endingVertex, returnList, numbers, newPath);
             }
         }
 
-
-
-        //public List<T> AllPaths(T start, T end)
-        //{
-        //    var startVert = Find(start);
-        //    var endVert = Find(end);
-
-
-        //    List<T> path = new List<T>();
-        //    HashSet<Vertex<T>> visited = new HashSet<Vertex<T>>();
-        //    while (visited.Count < Count)
-        //    {
-        //        dfsUtil(path, visited, startVert, endVert);
-        //    }
-
-        //    return path;
-
-        //}
-
-        //private void dfsUtil(List<T> path, HashSet<Vertex<T>> visited, Vertex<T> startVert, Vertex<T> endVert)
-        //{
-        //    if (startVert == null)
-        //    {
-        //        return;
-        //    }
-
-        //    path.Add(startVert.Value);
-
-
-        //    foreach (var edge in startVert.Edges)
-        //    {
-        //        if (!visited.Contains(edge.EndingVertex))
-        //        {
-        //            visited.Add(edge.EndingVertex);
-        //            dfsUtil(path, visited, edge.EndingVertex, endVert);
-        //            break;
-        //        }
-
-        //    }
-        //}
-
-        //public List<List<T>> FindShortestPath(T startValue, T endValue)
-        //{
-        //    Vertex<T> startingVertex = Find(startValue);
-        //    Vertex<T> endingVertex = Find(endValue);
-        //    List<List<T>> returnList = new List<List<T>>();
-
-        //    if (startingVertex == null || endingVertex == null)
-        //    {
-        //        return returnList;
-        //    }
-
-        //    returnList.Add(new List<T>());
-        //    List<List<T>> pathList = FindShortestPath(startingVertex, endingVertex, returnList, 0);
-
-        //    return returnList;
-        //}
-
-        //private List<List<T>> FindShortestPath(Vertex<T> startingVertex, Vertex<T> endingVertex, List<List<T>> returnList, int parentIndex)
-        //{
-        //    if (startingVertex == endingVertex)
-        //    {
-        //        return returnList;
-        //    }
-        //    List<T> newList = returnList[parentIndex];
-        //    newList.Add(startingVertex.Value);
-        //    returnList.Add(newList);
-        //    int newIndex = returnList.IndexOf(newList);
-        //    foreach (Edge<T> edge in startingVertex.Edges)
-        //    {
-        //        FindShortestPath(edge.EndingVertex, endingVertex, returnList, newIndex);
-        //    }
-        //    return returnList;
-        //}
 
 
         public List<T> DFS(T startValue, T endValue)
@@ -445,6 +368,32 @@ namespace DirectedWeightedGraph
                 currentVertex = parents[vertices.IndexOf(currentVertex)];
             }
             return returnList;
+        }
+
+
+        public List<Edge<T>> Dijkstra(T startValue, T endValue)
+        {
+            Vertex<T> startingVertex = Find(startValue);
+            Vertex<T> endingVertex = Find(endValue);
+
+            List<Edge<T>> returnList = new List<Edge<T>>();
+            if(startingVertex == null || endingVertex == null)
+            {
+                return returnList;
+            }
+
+            Dictionary<Vertex<T>, (int distance, Vertex<T> parentVertex, bool wasVisited)> VertexMap = new Dictionary<Vertex<T>, (int, Vertex<T>, bool)>();
+
+
+            foreach(Vertex<T> vertex in Vertices)
+            {
+                VertexMap.Add(vertex, (int.MaxValue, null, false));
+            }
+            VertexMap[startingVertex] = (0, null, false);
+
+            var PriorityQueue = new HeapTree<Vertex<T>>(Comparer<Vertex<T>>.Create((a, b) => VertexMap[a].distance.CompareTo(VertexMap[b].distance)));
+            return default;
+
         }
     }
 }

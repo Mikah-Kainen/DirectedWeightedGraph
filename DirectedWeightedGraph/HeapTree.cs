@@ -4,17 +4,16 @@ using System.Text;
 
 namespace DirectedWeightedGraph
 {
-    class HeapTree<T> where T : IComparable<T>
+    class HeapTree<T>
     {
 
         public List<T> Values;
-        public T Root;
+        public T Root { get { return Values[0]; } }
         public int Count { get { return Values.Count; } }
 
-        public HeapTree()
+        public HeapTree(Comparer<T> comparer)
         {
             Values = new List<T>();
-            Root = default;
         }
         
         public void Add(T value)
@@ -22,7 +21,6 @@ namespace DirectedWeightedGraph
             Values.Add(value);
             if(Root.Equals(default))
             {
-                Root = value;
                 return;
             }
 
@@ -38,7 +36,6 @@ namespace DirectedWeightedGraph
         {
             if(index == 0)
             {
-                Root = Values[0];
                 return;
             }
             int parentIndex = FindParent(index);
@@ -63,7 +60,40 @@ namespace DirectedWeightedGraph
 
         private void HeapifyDown(int index)
         {
+            int leftIndex = (index * 2) + 1;
+            int rightIndex = (index * 2) + 2;
 
+            if (rightIndex >= Values.Count)
+            {
+                if (leftIndex < Values.Count && Values[leftIndex].CompareTo(Values[index]) < 0)
+                {
+                    SwapValues(index, leftIndex);
+                }
+                return;
+            }
+
+            int smallerIndex;
+            if (Values[leftIndex].CompareTo(Values[rightIndex]) < 0)
+            {
+                smallerIndex = leftIndex;
+            }
+            else
+            {
+                smallerIndex = rightIndex;
+            }
+
+            if (Values[index].CompareTo(Values[smallerIndex]) > 0)
+            {
+                SwapValues(index, smallerIndex);
+                HeapifyDown(smallerIndex);
+            }
+        }
+
+        private void SwapValues(int index, int otherIndex)
+        {
+            T temp = Values[index];
+            Values[index] = Values[otherIndex];
+            Values[otherIndex] = temp;
         }
 
     }

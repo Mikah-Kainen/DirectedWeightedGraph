@@ -2,13 +2,47 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace DirectedWeightedGraph
 {
     class Program
     {
+
+        static (int, bool, string) Foo()
+        {
+            return (5, false, "bananas");
+        }
+
+        static (int val, bool result) Bar()
+        {
+            return (5, true);
+        }
+
         static void Main(string[] args)
         {
+
+            var t = Bar();
+
+            Console.WriteLine(t.val);
+            Console.WriteLine(t.result);
+
+
+            List<(int, bool)> tuples = new List<(int, bool)>();
+
+            for (int i = 0; i < 10; i++)
+            {
+                tuples.Add(Bar());
+            }
+
+            ;
+
+
+            (int, bool, string) mytuple = Foo();
+
+            Console.WriteLine(mytuple.Item1);
+            Console.WriteLine(mytuple.Item2);
+            Console.WriteLine(mytuple.Item3);
             //Graph<char> graph = new Graph<char>();
 
             //graph.AddVertex('a');
@@ -57,6 +91,13 @@ namespace DirectedWeightedGraph
             tree.Add(8);
             tree.Add(1);
             tree.Add(22);
+            for(int i = 15; i < 20; i ++)
+            {
+                tree.Add(i);
+            }
+            var thing = tree.Pop();
+            var where = tree.Pop();
+            var th = tree.Pop();
         }
     }
 }

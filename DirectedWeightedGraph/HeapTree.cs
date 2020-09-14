@@ -11,11 +11,33 @@ namespace DirectedWeightedGraph
         public T Root { get { return Values[0]; } }
         public int Count { get { return Values.Count; } }
 
+        private Comparer<T> comparer;
+
         public HeapTree(Comparer<T> comparer)
         {
             Values = new List<T>();
+            if(comparer != null)
+            {
+                this.comparer = comparer;
+            }
+            else
+            {
+                this.comparer = Comparer<T>.Default;
+            }
         }
-        
+
+        public bool Contains(T value)
+        {
+            foreach(T Value in Values)
+            {
+                if(Value.Equals(value))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public void Add(T value)
         {
             Values.Add(value);
@@ -39,11 +61,9 @@ namespace DirectedWeightedGraph
                 return;
             }
             int parentIndex = FindParent(index);
-            if(Values[index].CompareTo(Values[parentIndex]) < 0)
+            if(comparer.Compare(Values[index], Values[parentIndex]) < 0)
             {
-                T tempHolder = Values[parentIndex];
-                Values[parentIndex] = Values[index];
-                Values[index] = tempHolder;
+                SwapValues(index, parentIndex);
                 HeapifyUp(parentIndex);
             }
         }
@@ -65,7 +85,7 @@ namespace DirectedWeightedGraph
 
             if (rightIndex >= Values.Count)
             {
-                if (leftIndex < Values.Count && Values[leftIndex].CompareTo(Values[index]) < 0)
+                if (leftIndex < Values.Count && comparer.Compare(Values[leftIndex], Values[index]) < 0)
                 {
                     SwapValues(index, leftIndex);
                 }
@@ -73,7 +93,7 @@ namespace DirectedWeightedGraph
             }
 
             int smallerIndex;
-            if (Values[leftIndex].CompareTo(Values[rightIndex]) < 0)
+            if (comparer.Compare(Values[leftIndex], Values[rightIndex]) < 0)
             {
                 smallerIndex = leftIndex;
             }
@@ -82,7 +102,7 @@ namespace DirectedWeightedGraph
                 smallerIndex = rightIndex;
             }
 
-            if (Values[index].CompareTo(Values[smallerIndex]) > 0)
+            if (comparer.Compare(Values[index], Values[smallerIndex]) > 0)
             {
                 SwapValues(index, smallerIndex);
                 HeapifyDown(smallerIndex);

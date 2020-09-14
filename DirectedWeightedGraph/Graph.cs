@@ -274,8 +274,6 @@ namespace DirectedWeightedGraph
             }
         }
 
-
-
         public List<T> DFS(T startValue, T endValue)
         {
             Vertex<T> startingVertex = Find(startValue);
@@ -371,12 +369,12 @@ namespace DirectedWeightedGraph
         }
 
 
-        public List<Edge<T>> Dijkstra(T startValue, T endValue)
+        public List<T> Dijkstra(T startValue, T endValue)
         {
             Vertex<T> startingVertex = Find(startValue);
             Vertex<T> endingVertex = Find(endValue);
 
-            List<Edge<T>> returnList = new List<Edge<T>>();
+            List<T> returnList = new List<T>();
             if(startingVertex == null || endingVertex == null)
             {
                 return returnList;
@@ -392,8 +390,73 @@ namespace DirectedWeightedGraph
             VertexMap[startingVertex] = (0, null, false);
 
             var PriorityQueue = new HeapTree<Vertex<T>>(Comparer<Vertex<T>>.Create((a, b) => VertexMap[a].distance.CompareTo(VertexMap[b].distance)));
-            return default;
 
+            PriorityQueue.Add(startingVertex);
+            Dijkstra(PriorityQueue, VertexMap, endingVertex);
+
+            Vertex<T> currentVertex = endingVertex;
+            while(VertexMap[currentVertex].Item2 != null)
+            {
+                returnList.Add(currentVertex.Value);
+                currentVertex = VertexMap[currentVertex].Item2;
+            }
+            returnList.Add(startingVertex.Value) ;
+            return returnList;
+        }
+        
+        private void Dijkstra(HeapTree<Vertex<T>> PriorityQueue, Dictionary<Vertex<T>, (int, Vertex<T>, bool)> VertexMap, Vertex<T> endingVertex)
+        {
+            Vertex<T> currentVertex = PriorityQueue.Pop();
+            int currentDistance = VertexMap[currentVertex].Item1;
+            foreach(Edge<T> edge in currentVertex.Edges)
+            {
+                if(currentDistance + edge.Weight < VertexMap[edge.EndingVertex].Item1)
+                {
+                    ChangeMap(VertexMap, edge.EndingVertex, currentDistance + edge.Weight, currentVertex, false);
+                    PriorityQueue.Add(edge.EndingVertex);
+                }
+                else if(VertexMap[edge.EndingVertex].Item3 == false && !PriorityQueue.Contains(edge.EndingVertex))
+                {
+                    PriorityQueue.Add(edge.EndingVertex);
+                }
+            }
+            if(currentVertex.Equals(endingVertex))
+            {
+                return;
+            }
+            else
+            {
+                ChangeMap(VertexMap, currentVertex, true);
+            }
+            if(PriorityQueue.Count != 0)
+            {
+                Dijkstra(PriorityQueue, VertexMap, endingVertex);
+            }
+        }
+
+        private void ChangeMap(Dictionary<Vertex<T>, (int, Vertex<T>, bool)> map, Vertex<T> index, int distance, Vertex<T> parent, bool wasVisited)
+        {
+            map[index] = (distance, parent, wasVisited);
+        }
+
+        private void ChangeMap(Dictionary<Vertex<T>, (int, Vertex<T>, bool)> map, Vertex<T> index, int distance)
+        {
+            map[index] = (distance, map[index].Item2, map[index].Item3);
+        }
+
+        private void ChangeMap(Dictionary<Vertex<T>, (int, Vertex<T>, bool)> map, Vertex<T> index, Vertex<T> parent)
+        {
+            map[index] = (map[index].Item1, parent, map[index].Item3);
+        }
+
+        private void ChangeMap(Dictionary<Vertex<T>, (int, Vertex<T>, bool)> map, Vertex<T> index, bool wasVisited)
+        {
+            map[index] = (map[index].Item1, map[index].Item2, wasVisited);
+        }
+
+        private void ChangeMap(Dictionary<Vertex<T>, (int, Vertex<T>, bool)> map, Vertex<T> index, int distance, bool wasVisited)
+        {
+            map[index] = (distance, map[index].Item2, wasVisited);
         }
     }
 }

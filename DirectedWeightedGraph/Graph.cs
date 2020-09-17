@@ -429,47 +429,41 @@ namespace DirectedWeightedGraph
             Dijkstra(PriorityQueue, VertexMap, endingVertex);
 
             Vertex<T> currentVertex = endingVertex;
-            Stack<Vertex<T>> correctPath = new Stack<Vertex<T>>();
-            while(currentVertex != null)
+            while(VertexMap[currentVertex].parent != null)
             {
                 returnList.Add(currentVertex.Value);
-                correctPath.Push(currentVertex);
                 currentVertex = VertexMap[currentVertex].parent;
             }
-
-            currentVertex = correctPath.Pop();
-            Edge<T> connection = null;
-            while(correctPath.Count != 0)
+            if (returnList.Count != 0)
             {
-                foreach(Edge<T> edge in currentVertex.Edges)
-                {
-                    if(edge.EndingVertex.Equals(correctPath.Peek()))
-                    {
-                        connection = edge;
-                    }
-                }
-                if(VertexMap[currentVertex].distance + connection.Weight < VertexMap[correctPath.Peek()].distance)
-                {
-                    throw new Exception("There is an infinite loop");
-                }
-                currentVertex = correctPath.Pop();
+                returnList.Add(startingVertex.Value);
             }
+
 
             return returnList;
         }
         
-        private void Dijkstra(HeapTree<Vertex<T>> PriorityQueue, Dictionary<Vertex<T>, (int, Vertex<T>, bool)> VertexMap, Vertex<T> endingVertex)
+
+        private void Dijkstra(HeapTree<Vertex<T>> PriorityQueue, Dictionary<Vertex<T>, (int distance, Vertex<T> parent, bool wasVisited)> VertexMap, Vertex<T> endingVertex)
         {
             Vertex<T> currentVertex = PriorityQueue.Pop();
-            int currentDistance = VertexMap[currentVertex].Item1;
+            int currentDistance = VertexMap[currentVertex].distance;
             foreach(Edge<T> edge in currentVertex.Edges)
             {
-                if(currentDistance + edge.Weight < VertexMap[edge.EndingVertex].Item1)
+                if(currentDistance + edge.Weight < VertexMap[edge.EndingVertex].distance)
                 {
-                    ChangeMap(VertexMap, edge.EndingVertex, currentDistance + edge.Weight, currentVertex, false);
-                    PriorityQueue.Add(edge.EndingVertex);
+                    if (VertexMap[edge.EndingVertex].wasVisited)
+                    {
+                        //negative cycle
+                        throw new Exception("negative cycle");
+                    }
+                    else
+                    {
+                        ChangeMap(VertexMap, edge.EndingVertex, currentDistance + edge.Weight, currentVertex);
+                        PriorityQueue.Add(edge.EndingVertex);
+                    }
                 }
-                else if(VertexMap[edge.EndingVertex].Item3 == false && !PriorityQueue.Contains(edge.EndingVertex))
+                else if(VertexMap[edge.EndingVertex].wasVisited == false && !PriorityQueue.Contains(edge.EndingVertex))
                 {
                     PriorityQueue.Add(edge.EndingVertex);
                 }
@@ -512,5 +506,12 @@ namespace DirectedWeightedGraph
         {
             map[index] = (distance, map[index].Item2, wasVisited);
         }
+
+
+        private void ChangeMap(Dictionary<Vertex<T>, (int, Vertex<T>, bool)> map, Vertex<T> index, int distance, Vertex<T> parent)
+        {
+            map[index] = (distance, parent, map[index].Item3);
+        }
+
     }
 }

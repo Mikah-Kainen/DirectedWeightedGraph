@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 
 namespace DirectedWeightedGraph
 {
@@ -183,7 +184,7 @@ namespace DirectedWeightedGraph
         private int FindWeight(List<Edge<T>> list)
         {
             int weight = 0;
-            foreach(Edge<T> edge in list)
+            foreach (Edge<T> edge in list)
             {
                 weight += edge.Weight;
             }
@@ -375,7 +376,7 @@ namespace DirectedWeightedGraph
             Vertex<T> endingVertex = Find(endValue);
 
             List<T> returnList = new List<T>();
-            if(startingVertex == null || endingVertex == null)
+            if (startingVertex == null || endingVertex == null)
             {
                 return returnList;
             }
@@ -383,7 +384,7 @@ namespace DirectedWeightedGraph
             Dictionary<Vertex<T>, (int distance, Vertex<T> parentVertex, bool wasVisited)> VertexMap = new Dictionary<Vertex<T>, (int, Vertex<T>, bool)>();
 
 
-            foreach(Vertex<T> vertex in Vertices)
+            foreach (Vertex<T> vertex in Vertices)
             {
                 VertexMap.Add(vertex, (int.MaxValue, null, false));
             }
@@ -395,12 +396,12 @@ namespace DirectedWeightedGraph
             Dijkstra(PriorityQueue, VertexMap, endingVertex);
 
             Vertex<T> currentVertex = endingVertex;
-            while(VertexMap[currentVertex].Item2 != null)
+            while (VertexMap[currentVertex].Item2 != null)
             {
                 returnList.Add(currentVertex.Value);
                 currentVertex = VertexMap[currentVertex].Item2;
             }
-            returnList.Add(startingVertex.Value) ;
+            returnList.Add(startingVertex.Value);
             return returnList;
         }
 
@@ -410,14 +411,14 @@ namespace DirectedWeightedGraph
             Vertex<T> endingVertex = Find(endValue);
             List<T> returnList = new List<T>();
 
-            if(startingVertex == null || endingVertex == null)
+            if (startingVertex == null || endingVertex == null)
             {
                 return returnList;
             }
 
             Dictionary<Vertex<T>, (int distance, Vertex<T> parent, bool wasVisited)> VertexMap = new Dictionary<Vertex<T>, (int distance, Vertex<T> parent, bool wasVisited)>();
 
-            foreach(Vertex<T> vertex in vertices)
+            foreach (Vertex<T> vertex in vertices)
             {
                 VertexMap.Add(vertex, (int.MaxValue, null, false));
             }
@@ -429,7 +430,7 @@ namespace DirectedWeightedGraph
             Dijkstra(PriorityQueue, VertexMap, endingVertex);
 
             Vertex<T> currentVertex = endingVertex;
-            while(VertexMap[currentVertex].parent != null)
+            while (VertexMap[currentVertex].parent != null)
             {
                 returnList.Add(currentVertex.Value);
                 currentVertex = VertexMap[currentVertex].parent;
@@ -442,15 +443,14 @@ namespace DirectedWeightedGraph
 
             return returnList;
         }
-        
 
         private void Dijkstra(HeapTree<Vertex<T>> PriorityQueue, Dictionary<Vertex<T>, (int distance, Vertex<T> parent, bool wasVisited)> VertexMap, Vertex<T> endingVertex)
         {
             Vertex<T> currentVertex = PriorityQueue.Pop();
             int currentDistance = VertexMap[currentVertex].distance;
-            foreach(Edge<T> edge in currentVertex.Edges)
+            foreach (Edge<T> edge in currentVertex.Edges)
             {
-                if(currentDistance + edge.Weight < VertexMap[edge.EndingVertex].distance)
+                if (currentDistance + edge.Weight < VertexMap[edge.EndingVertex].distance)
                 {
                     if (VertexMap[edge.EndingVertex].wasVisited)
                     {
@@ -463,12 +463,12 @@ namespace DirectedWeightedGraph
                         PriorityQueue.Add(edge.EndingVertex);
                     }
                 }
-                else if(VertexMap[edge.EndingVertex].wasVisited == false && !PriorityQueue.Contains(edge.EndingVertex))
+                else if (VertexMap[edge.EndingVertex].wasVisited == false && !PriorityQueue.Contains(edge.EndingVertex))
                 {
                     PriorityQueue.Add(edge.EndingVertex);
                 }
             }
-            if(currentVertex.Equals(endingVertex))
+            if (currentVertex.Equals(endingVertex))
             {
                 return;
             }
@@ -476,7 +476,7 @@ namespace DirectedWeightedGraph
             {
                 ChangeMap(VertexMap, currentVertex, true);
             }
-            if(PriorityQueue.Count != 0)
+            if (PriorityQueue.Count != 0)
             {
                 Dijkstra(PriorityQueue, VertexMap, endingVertex);
             }
@@ -507,11 +507,38 @@ namespace DirectedWeightedGraph
             map[index] = (distance, map[index].Item2, wasVisited);
         }
 
-
         private void ChangeMap(Dictionary<Vertex<T>, (int, Vertex<T>, bool)> map, Vertex<T> index, int distance, Vertex<T> parent)
         {
             map[index] = (distance, parent, map[index].Item3);
         }
 
+
+        public List<T> AStar(T startValue, T endValue)
+        {
+            Vertex<T> startingVertex = Find(startValue);
+            Vertex<T> endingVertex = Find(endValue);
+            List<T> returnList = new List<T>();
+
+            if(startingVertex == null || endingVertex == null)
+            {
+                return returnList;
+            }
+
+            Dictionary<Vertex<T>, VertexMapValue<T>> VertexMap = new Dictionary<Vertex<T>, VertexMapValue<T>>();
+            foreach(Vertex<T> vertex in Vertices)
+            {
+                VertexMap.Add(vertex, new VertexMapValue<T>(int.MaxValue, null, false, int.MaxValue));
+            }
+            VertexMap[startingVertex].distance = 0;
+            VertexMap[startingVertex].finalDistance = Manhatten(startingVertex, endingVertex);
+
+            HeapTree<Vertex<T>> PriorityQueue = new HeapTree<Vertex<T>>(Comparer<Vertex<T>>.Create((a, b) => VertexMap[a].finalDistance.CompareTo(VertexMap[b].finalDistance)));
+        }
+
+        private int Manhatten(Dictionary<Vertex<T>, VertexMapValue<T>> VertexMap, Vertex<T> startingVertex, Vertex<T> endingVertex)
+        {
+            int distance = VertexMap[startingVertex].distance;
+
+        }
     }
 }

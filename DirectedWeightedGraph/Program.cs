@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
@@ -77,7 +78,8 @@ namespace DirectedWeightedGraph
             //var result = graph.BellmanFord('a', 'r');
 
             Graph<Point> graph = new Graph<Point>();
-
+            string[] mazeLines = File.ReadAllLines("MazeProblem.txt");
+            ;
         }
     }
 }

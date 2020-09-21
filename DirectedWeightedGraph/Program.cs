@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
+using System.Security.Cryptography.X509Certificates;
 
 namespace DirectedWeightedGraph
 {
@@ -13,6 +14,9 @@ namespace DirectedWeightedGraph
 
         static void Main(string[] args)
         {
+
+            var points = new List<MPoint>() { new MPoint(1, 1), new MPoint(1, 2) };
+            ;
 
             //Graph<char> graph = new Graph<char>();
 
@@ -77,10 +81,23 @@ namespace DirectedWeightedGraph
 
             //var result = graph.BellmanFord('a', 'r');
 
-            Graph<Point> graph = new Graph<Point>();
+            Graph<MPoint> graph = new Graph<MPoint>();
             string[] mazeLines = File.ReadAllLines("MazeProblem.txt");
 
             string[] commands = mazeLines[0].Split('|');
+            ;
+
+            foreach (string command in commands)
+            {
+                graph.AddVertex(new MPoint(command[3], command[7]));
+                Console.WriteLine($"Added point ({command[3]},{command[7]})");
+            }
+
+            for (int i = 1; i < mazeLines.Length; i++)
+            {
+                graph.Connect(new MPoint(mazeLines[i][3], mazeLines[i][7]), new MPoint(mazeLines[i][13], mazeLines[i][17]), mazeLines[i][20]);
+                Console.WriteLine($"Connected Points ({mazeLines[i][3]},{mazeLines[i][7]}) and ({mazeLines[i][13]},{mazeLines[i][17]}) with weight {mazeLines[i][20]}");
+            }
             ;
         }
     }

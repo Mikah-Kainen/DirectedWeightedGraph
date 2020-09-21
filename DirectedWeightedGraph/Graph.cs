@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 
 namespace DirectedWeightedGraph
 {
-    class Graph<T>
+    class Graph<T> where T: IPoint
     {
         private List<Vertex<T>> vertices;
         public IReadOnlyList<Vertex<T>> Vertices { get { return vertices; } }
@@ -519,13 +520,13 @@ namespace DirectedWeightedGraph
             Vertex<T> endingVertex = Find(endValue);
             List<T> returnList = new List<T>();
 
-            if(startingVertex == null || endingVertex == null)
+            if (startingVertex == null || endingVertex == null)
             {
                 return returnList;
             }
 
             Dictionary<Vertex<T>, VertexMapValue<T>> VertexMap = new Dictionary<Vertex<T>, VertexMapValue<T>>();
-            foreach(Vertex<T> vertex in Vertices)
+            foreach (Vertex<T> vertex in Vertices)
             {
                 VertexMap.Add(vertex, new VertexMapValue<T>(int.MaxValue, null, false, int.MaxValue));
             }
@@ -533,12 +534,37 @@ namespace DirectedWeightedGraph
             VertexMap[startingVertex].finalDistance = Manhatten(startingVertex, endingVertex);
 
             HeapTree<Vertex<T>> PriorityQueue = new HeapTree<Vertex<T>>(Comparer<Vertex<T>>.Create((a, b) => VertexMap[a].finalDistance.CompareTo(VertexMap[b].finalDistance)));
+            PriorityQueue.Add(startingVertex);
+
+            AStar(VertexMap, PriorityQueue, endingVertex);
         }
 
-        private int Manhatten(Dictionary<Vertex<T>, VertexMapValue<T>> VertexMap, Vertex<T> startingVertex, Vertex<T> endingVertex)
+        private void AStar(Dictionary<Vertex<T>, VertexMapValue<T>> VertexMap, HeapTree<Vertex<T>> PriorityQueue, Vertex<T> endingVertex)
         {
-            int distance = VertexMap[startingVertex].distance;
+            Vertex<T> currentVertex = PriorityQueue.Pop();
 
+            foreach(Edge<T> edge in currentVertex.Edges)
+            {
+                VertexMapValue<T> edgeInfo = VertexMap[edge.EndingVertex];
+                if(!edgeInfo.wasVisited)
+                {
+                    PriorityQueue.Add(edge.EndingVertex);
+                }
+                else if(VertexMap[currentVertex].distance + Manhatten(currentVertex, edge.EndingVertex) < edgeInfo.distance)
+                {
+                    VertexMap[edge.EndingVertex].distance = VertexMap[currentVertex].distance + Manhatten(currentVertex, edge.EndingVertex);
+                    VertexMap[edge.EndingVertex].wasVisited = false;
+                    VertexMap[edge.EndingVertex].founder = currentVertex;
+                }
+            }
+        }
+
+        private int Manhatten(Vertex<T> startingVertex, Vertex<T> endingVertex)
+        {
+            int deltaX = Math.Abs(startingVertex.Value.X - startingVertex.Value.X);
+            int deltaY = Math.Abs(startingVertex.Value.Y - startingVertex.Value.Y);
+
+            return deltaX + deltaY;
         }
     }
 }

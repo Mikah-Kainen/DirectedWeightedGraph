@@ -79,6 +79,8 @@ namespace DirectedWeightedGraph
 
             Graph<Point> graph = new Graph<Point>();
             string[] mazeLines = File.ReadAllLines("MazeProblem.txt");
+
+            string[] commands = mazeLines[0].Split('|');
             ;
         }
     }

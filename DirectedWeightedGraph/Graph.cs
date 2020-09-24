@@ -55,6 +55,18 @@ namespace DirectedWeightedGraph
             return false;
         }
 
+        public Vertex<T> FindPoint(int x, int y)
+        {
+            foreach(Vertex<T> vertex in vertices)
+            {
+                if(vertex.Value.X == x && vertex.Value.Y == y)
+                {
+                    return vertex;
+                }
+            }
+            return null;
+        }
+
         public Vertex<T> Find(T value)
         {
             foreach (Vertex<T> vertex in vertices)
@@ -537,6 +549,17 @@ namespace DirectedWeightedGraph
             PriorityQueue.Add(startingVertex);
 
             AStar(VertexMap, PriorityQueue, endingVertex);
+
+            Vertex<T> currentVertex = endingVertex;
+            while(VertexMap[currentVertex].founder != startingVertex)
+            {
+                returnList.Add(currentVertex.Value);
+                currentVertex = VertexMap[currentVertex].founder;
+            }
+            returnList.Add(startingVertex.Value);
+
+            return returnList;
+
         }
 
         private void AStar(Dictionary<Vertex<T>, VertexMapValue<T>> VertexMap, HeapTree<Vertex<T>> PriorityQueue, Vertex<T> endingVertex)
@@ -556,6 +579,12 @@ namespace DirectedWeightedGraph
                     VertexMap[edge.EndingVertex].wasVisited = false;
                     VertexMap[edge.EndingVertex].founder = currentVertex;
                 }
+            }
+
+            if(!currentVertex.Equals(endingVertex))
+            {
+                VertexMap[currentVertex].wasVisited = true;
+                AStar(VertexMap, PriorityQueue, endingVertex);
             }
         }
 

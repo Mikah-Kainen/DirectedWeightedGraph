@@ -98,6 +98,8 @@ namespace DirectedWeightedGraph
                 graph.Connect(new MPoint(mazeLines[i][3], mazeLines[i][7]), new MPoint(mazeLines[i][13], mazeLines[i][17]), mazeLines[i][20]);
                 Console.WriteLine($"Connected Points ({mazeLines[i][3]},{mazeLines[i][7]}) and ({mazeLines[i][13]},{mazeLines[i][17]}) with weight {mazeLines[i][20]}");
             }
+
+            List<MPoint> result = graph.AStar(new MPoint(0, 2), new MPoint(1, 1));
             ;
         }
     }

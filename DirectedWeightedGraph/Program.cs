@@ -89,17 +89,24 @@ namespace DirectedWeightedGraph
 
             foreach (string command in commands)
             {
-                graph.AddVertex(new MPoint(command[3], command[7]));
+                graph.AddVertex(new MPoint(int.Parse(command[3].ToString()), int.Parse(command[7].ToString())));
                 Console.WriteLine($"Added point ({command[3]},{command[7]})");
             }
+            Console.WriteLine();
 
             for (int i = 1; i < mazeLines.Length; i++)
             {
-                graph.Connect(new MPoint(mazeLines[i][3], mazeLines[i][7]), new MPoint(mazeLines[i][13], mazeLines[i][17]), mazeLines[i][20]);
+                graph.Connect(new MPoint(int.Parse(mazeLines[i][3].ToString()), int.Parse(mazeLines[i][7].ToString())), new MPoint(int.Parse(mazeLines[i][13].ToString()), int.Parse(mazeLines[i][17].ToString())), int.Parse(mazeLines[i][20].ToString()));
                 Console.WriteLine($"Connected Points ({mazeLines[i][3]},{mazeLines[i][7]}) and ({mazeLines[i][13]},{mazeLines[i][17]}) with weight {mazeLines[i][20]}");
             }
+            Console.WriteLine();
 
             List<MPoint> result = graph.AStar(new MPoint(0, 2), new MPoint(1, 1));
+            result.Reverse();
+            foreach(MPoint point in result)
+            {
+                Console.WriteLine($"{point.X}, {point.Y}");
+            }
             ;
         }
     }

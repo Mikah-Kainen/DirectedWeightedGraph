@@ -543,7 +543,7 @@ namespace DirectedWeightedGraph
                 VertexMap.Add(vertex, new VertexMapValue<T>(int.MaxValue, null, false, int.MaxValue));
             }
             VertexMap[startingVertex].distance = 0;
-            VertexMap[startingVertex].finalDistance = Manhatten(startingVertex, endingVertex);
+            VertexMap[startingVertex].finalDistance = Euclidean(startingVertex, endingVertex);
 
             HeapTree<Vertex<T>> PriorityQueue = new HeapTree<Vertex<T>>(Comparer<Vertex<T>>.Create((a, b) => VertexMap[a].finalDistance.CompareTo(VertexMap[b].finalDistance)));
             PriorityQueue.Add(startingVertex);
@@ -551,7 +551,7 @@ namespace DirectedWeightedGraph
             AStar(VertexMap, PriorityQueue, endingVertex);
 
             Vertex<T> currentVertex = endingVertex;
-            while(VertexMap[currentVertex].founder != startingVertex)
+            while(!currentVertex.Equals(startingVertex))
             {
                 returnList.Add(currentVertex.Value);
                 currentVertex = VertexMap[currentVertex].founder;
@@ -572,15 +572,14 @@ namespace DirectedWeightedGraph
                 if(!edgeInfo.wasVisited)
                 {
                     PriorityQueue.Add(edge.EndingVertex);
-                }
-                else if(VertexMap[currentVertex].distance + Manhatten(currentVertex, edge.EndingVertex) < edgeInfo.distance)
-                {
-                    VertexMap[edge.EndingVertex].distance = VertexMap[currentVertex].distance + Manhatten(currentVertex, edge.EndingVertex);
-                    VertexMap[edge.EndingVertex].wasVisited = false;
                     VertexMap[edge.EndingVertex].founder = currentVertex;
                 }
             }
 
+            if (PriorityQueue.Count == 0 && !currentVertex.Equals(endingVertex))
+            {
+                throw new Exception();
+            }
             if(!currentVertex.Equals(endingVertex))
             {
                 VertexMap[currentVertex].wasVisited = true;
@@ -588,12 +587,23 @@ namespace DirectedWeightedGraph
             }
         }
 
-        private int Manhatten(Vertex<T> startingVertex, Vertex<T> endingVertex)
+        private double Manhatten(Vertex<T> startingVertex, Vertex<T> endingVertex)
         {
-            int deltaX = Math.Abs(startingVertex.Value.X - startingVertex.Value.X);
-            int deltaY = Math.Abs(startingVertex.Value.Y - startingVertex.Value.Y);
+            double deltaX = Math.Abs(startingVertex.Value.X - startingVertex.Value.X);
+            double deltaY = Math.Abs(startingVertex.Value.Y - startingVertex.Value.Y);
 
             return deltaX + deltaY;
+        }
+
+        private double Euclidean(Vertex<T> startingVertex, Vertex<T> endingVertex)
+        {
+            double deltaX = Math.Abs(startingVertex.Value.X - endingVertex.Value.X);
+            double deltaY = Math.Abs(startingVertex.Value.Y - endingVertex.Value.Y);
+
+            deltaX = deltaX * deltaX;
+            deltaY = deltaY * deltaY;
+
+            return Math.Sqrt(deltaX + deltaY);
         }
     }
 }
